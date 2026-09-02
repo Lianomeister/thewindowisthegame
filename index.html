@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE WINDOW IS THE GAME — Tinypeak Studios</title>
+<meta name="description" content="Das Fenster ist nicht die Oberfläche des Spiels. Es ist das Spiel.">
+<style>
+  :root{
+    --face: #ece9d8;
+    --face-shadow: #aca998;
+    --face-light: #ffffff;
+    --ink: #1a1a1a;
+    --ink-dim: #4b4b46;
+    --titlebar-active: linear-gradient(180deg,#3a94ff 0%,#2467e0 6%,#1257db 40%,#0b3fc4 88%,#082fa8 100%);
+    --titlebar-inactive: linear-gradient(180deg,#cfcfc2 0%,#b7b7a9 6%,#9c9c8f 55%,#8b8b7f 100%);
+    --taskbar: linear-gradient(180deg,#2f7dfa 0%,#1b5ff0 4%,#1547d8 10%,#123ec2 55%,#0f2fa0 100%);
+    --accent-yellow: #ffcc33;
+    --close-grad: linear-gradient(180deg,#f6867b 0%,#e2483a 45%,#b81f14 100%);
+    --btn-grad: linear-gradient(180deg,#5fa6ff 0%,#2d78f0 45%,#1157d6 100%);
+  }
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior: auto; }
+    *,*::before,*::after{ animation-duration:.001ms !important; transition-duration:.001ms !important; }
+  }
+  body{
+    margin: 0;
+    min-height: 100vh;
+    font-family: Tahoma, Verdana, "Segoe UI", Arial, sans-serif;
+    color: var(--ink);
+    padding-bottom: 40px;
+  }
+
+  /* desktop backdrop, fixed behind everything */
+  .desktop-bg{ position: fixed; inset: 0; z-index: -2; background: linear-gradient(180deg,#1c5cc9 0%,#3f83e0 30%,#8fc2f2 62%,#cfe9fb 82%,#e7f4fd 100%); }
+  .hill-back{ position: fixed; left: -10%; right: -10%; bottom: -6%; height: 34vh; z-index: -1; border-radius: 50% 50% 0 0 / 100% 100% 0 0; background: linear-gradient(180deg,#5fae3f,#3f8f27); }
+  .hill-front{ position: fixed; left: -20%; right: -5%; bottom: -10%; height: 26vh; z-index: -1; border-radius: 50% 50% 0 0 / 100% 100% 0 0; background: linear-gradient(180deg,#79c94f,#4c9c30); }
+
+  /* generic XP window chrome */
+  .xp-window{
+    background: var(--face);
+    border: 1px solid #0b2fa8;
+    border-radius: 8px 8px 3px 3px;
+    box-shadow: 3px 3px 14px rgba(0,0,0,0.4);
+  }
+  .xp-titlebar{
+    display: flex; align-items: center; justify-content: space-between;
+    height: 28px;
+    padding: 0 4px 0 6px;
+    border-radius: 7px 7px 0 0;
+    background: var(--titlebar-active);
+  }
+  .xp-window.is-inactive .xp-titlebar{ background: var(--titlebar-inactive); }
+  .xp-titlebar .title{
+    display: flex; align-items: center; gap: 6px;
+    color: #fff; font-size: 12.5px; font-weight: 700;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.55);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .xp-titlebar .icon{ width: 14px; height: 14px; flex: none; }
+  .xp-controls{ display: flex; gap: 2px; }
+  .xp-controls button{
+    width: 21px; height: 20px;
+    border: 1px solid rgba(0,0,0,0.35);
+    border-radius: 3px;
+    background: var(--btn-grad);
+    color: #fff; font-size: 11px; font-weight: 700;
+    line-height: 1;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+    cursor: default;
+  }
+  .xp-controls button.close{ background: var(--close-grad); }
+  .xp-body{ padding: 18px 20px; }
+  .xp-statusbar{
+    display: flex; justify-content: space-between;
+    padding: 3px 10px;
+    font-size: 11px; color: var(--ink-dim);
+    border-top: 1px solid #fff;
+    background: var(--face);
+    box-shadow: inset 0 1px 0 var(--face-shadow);
+  }
+
+  /* hero: the draggable GameWindow */
+  .xp-floating{
+    position: fixed;
+    top: 0; left: 0;
+    z-index: 50;
+    opacity: 0;
+    animation: fadeIn 550ms ease-out 200ms forwards;
+  }
+  @keyframes fadeIn{ from{ opacity:0; } to{ opacity:1; } }
+  .xp-floating .xp-titlebar{ cursor: grab; touch-action: none; }
+  .xp-floating .xp-titlebar:active{ cursor: grabbing; }
+
+  .drag-window{ width: min(560px, 90vw); }
+  .drag-window .eyebrow{
+    font-size: 11.5px; color: #1447b8; font-weight: 700; letter-spacing: .02em;
+    margin: 0 0 10px;
+  }
+  .drag-window h1{
+    font-family: Tahoma, Verdana, sans-serif;
+    font-size: clamp(24px, 4vw, 36px);
+    line-height: 1.05;
+    font-weight: 700;
+    margin: 0 0 12px;
+    color: #0a2a70;
+    text-shadow: 1px 1px 0 rgba(255,255,255,0.6);
+  }
+  .drag-window p.sub{
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--ink);
+    max-width: 46ch;
+    margin: 0;
+  }
+
+  /* concept window */
+  .concept-window{ width: min(460px, 90vw); }
+  .concept-window .xp-body{ background: #fff; margin: 2px; }
+  .concept-window p{
+    font-family: "Courier New", Courier, monospace;
+    font-size: 13px;
+    line-height: 1.55;
+    color: #111;
+    margin: 0;
+  }
+
+  .credit-line{
+    position: fixed;
+    left: 14px; bottom: 42px;
+    font-size: 10.5px;
+    color: #eaf2ff;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.35);
+    z-index: 40;
+  }
+
+  /* taskbar */
+  .taskbar{
+    position: fixed; left: 0; right: 0; bottom: 0;
+    height: 34px;
+    background: var(--taskbar);
+    border-top: 1px solid #7fb2ff;
+    display: flex; align-items: stretch;
+    z-index: 60;
+  }
+  .start-btn{
+    display: flex; align-items: center; gap: 6px;
+    padding: 0 14px 0 8px;
+    background: linear-gradient(180deg,#7fe066,#3f9f2b 55%,#2c7f1c);
+    border-radius: 0 10px 10px 0;
+    border: 1px solid #1c5c10;
+    font-weight: 700; font-style: italic; color: #fff; font-size: 13px;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.4);
+    cursor: default;
+    margin: 2px 0;
+  }
+  .start-btn .logo{ width: 15px; height: 15px; flex: none; }
+  .taskbar-sep{ width: 1px; background: rgba(255,255,255,0.25); margin: 5px 4px; }
+  .taskbar-items{ display: flex; align-items: stretch; gap: 4px; padding: 3px 4px; flex: 1; overflow-x: auto; }
+  .taskbar-items a{
+    display: flex; align-items: center; gap: 6px;
+    padding: 0 10px;
+    font-size: 12px; color: #fff;
+    text-decoration: none;
+    background: linear-gradient(180deg,#3f7fe8,#1c52c9);
+    border: 1px solid #0c2f8f;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .taskbar-items a.is-pressed{
+    background: linear-gradient(180deg,#0f3caa,#1c52c9);
+    box-shadow: inset 1px 1px 3px rgba(0,0,0,0.5);
+  }
+  .taskbar-items a .icon{ width: 12px; height: 12px; flex: none; }
+  .tray{
+    display: flex; align-items: center; gap: 8px;
+    padding: 0 12px;
+    background: linear-gradient(180deg,#123ea0,#0d2f85);
+    border-left: 1px solid #0a2670;
+    font-size: 11.5px; color: #eaf2ff;
+  }
+</style>
+</head>
+<body>
+
+<div class="desktop-bg"></div>
+<div class="hill-back"></div>
+<div class="hill-front"></div>
+
+<div class="xp-window drag-window xp-floating" id="dragWindow">
+  <div class="xp-titlebar">
+    <span class="title">
+      <svg class="icon" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#ffd23f"/><rect x="2" y="2" width="12" height="4" fill="#fff" opacity=".8"/></svg>
+      GameWindow.exe
+    </span>
+    <div class="xp-controls">
+      <button type="button">_</button>
+      <button type="button">□</button>
+      <button type="button" class="close">×</button>
+    </div>
+  </div>
+  <div class="xp-body">
+    <p class="eyebrow">A NARRATIVE PUZZLE FOR PC</p>
+    <h1>THE WINDOW IS THE GAME</h1>
+    <p class="sub">One window on your desktop opens onto another world. Where you put it decides what you're allowed to see.</p>
+  </div>
+  <div class="xp-statusbar">
+    <span>Ready</span>
+    <span id="pos">x: 0, y: 0</span>
+  </div>
+</div>
+
+<div class="xp-window concept-window xp-floating is-inactive" id="conceptWindow">
+  <div class="xp-titlebar">
+    <span class="title">
+      <svg class="icon" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#fff"/><rect width="16" height="16" rx="2" fill="none" stroke="#666" stroke-width="1.2"/></svg>
+      concept.txt — Notepad
+    </span>
+    <div class="xp-controls">
+      <button type="button">_</button>
+      <button type="button">□</button>
+      <button type="button" class="close">×</button>
+    </div>
+  </div>
+  <div class="xp-body">
+    <p>You're not watching a game inside a window.<br>You're watching a window that happens to be a game — and it's already moving without you.</p>
+  </div>
+  <div class="xp-statusbar"><span>Ln 1, Col 1</span><span>UTF-8</span></div>
+</div>
+
+<p class="credit-line">TINYPEAK STUDIOS · GODOT</p>
+
+<div class="taskbar">
+  <div class="start-btn">
+    <svg class="logo" viewBox="0 0 16 16">
+      <rect x="2" y="2" width="12" height="12" rx="1.5" fill="none" stroke="#fff" stroke-width="1.6"/>
+      <line x1="2" y1="6" x2="14" y2="6" stroke="#fff" stroke-width="1.6"/>
+    </svg>
+    start
+  </div>
+  <div class="taskbar-sep"></div>
+  <div class="taskbar-items">
+    <a href="#" id="taskGameWindow" class="is-pressed" onclick="return false;">
+      <svg class="icon" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#ffd23f"/></svg>
+      GameWindow.exe
+    </a>
+    <a href="#" id="taskConcept" onclick="return false;">
+      <svg class="icon" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#fff" stroke="#666" stroke-width="1.2"/></svg>
+      concept.txt
+    </a>
+  </div>
+  <div class="tray">
+    <span>waitlist open</span>
+    <span id="clock">00:00</span>
+  </div>
+</div>
+
+<script>
+  function tick(){
+    var d = new Date();
+    var h = String(d.getHours()).padStart(2,'0');
+    var m = String(d.getMinutes()).padStart(2,'0');
+    document.getElementById('clock').textContent = h + ':' + m;
+  }
+  tick();
+  setInterval(tick, 15000);
+
+  (function(){
+    function makeDraggable(win, handleSelector, initX, initY, onMove){
+      var handle = win.querySelector(handleSelector);
+      var x = initX, y = initY;
+      var dragging = false;
+      var startX = 0, startY = 0, baseX = 0, baseY = 0;
+
+      function clampAndApply(){
+        var rect = win.getBoundingClientRect();
+        var w = rect.width, h = rect.height;
+        var minX = 6, maxX = window.innerWidth - w - 6;
+        var minY = 6, maxY = window.innerHeight - h - 44;
+        x = Math.max(minX, Math.min(maxX, x));
+        y = Math.max(minY, Math.min(maxY, y));
+        win.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+        if(onMove) onMove(x, y);
+      }
+      clampAndApply();
+
+      handle.addEventListener('pointerdown', function(e){
+        dragging = true;
+        handle.setPointerCapture(e.pointerId);
+        startX = e.clientX; startY = e.clientY;
+        baseX = x; baseY = y;
+      });
+      handle.addEventListener('pointermove', function(e){
+        if(!dragging) return;
+        x = baseX + (e.clientX - startX);
+        y = baseY + (e.clientY - startY);
+        clampAndApply();
+      });
+      handle.addEventListener('pointerup', function(){ dragging = false; });
+
+      return {
+        reset: function(nx, ny){ x = nx; y = ny; clampAndApply(); },
+        recompute: function(nx, ny){ x = nx; y = ny; clampAndApply(); }
+      };
+    }
+
+    var heroWin = document.getElementById('dragWindow');
+    var conceptWin = document.getElementById('conceptWindow');
+    var posLabel = document.getElementById('pos');
+
+    function layout(){
+      var heroRect = heroWin.getBoundingClientRect();
+      var heroLeft = (window.innerWidth - heroRect.width) / 2;
+      var heroTop = window.innerHeight * 0.20;
+      var conceptLeft = window.innerWidth * 0.125;
+      var conceptTop = window.innerHeight * 0.565;
+      return { heroLeft: heroLeft, heroTop: heroTop, conceptLeft: conceptLeft, conceptTop: conceptTop };
+    }
+
+    var initial = layout();
+
+    var heroCtrl = makeDraggable(heroWin, '.xp-titlebar', initial.heroLeft, initial.heroTop, function(x, y){
+      posLabel.textContent = 'x: ' + Math.round(x) + ', y: ' + Math.round(y);
+    });
+    var conceptCtrl = makeDraggable(conceptWin, '.xp-titlebar', initial.conceptLeft, initial.conceptTop);
+
+    window.addEventListener('resize', function(){
+      var l = layout();
+      heroCtrl.recompute(l.heroLeft, l.heroTop);
+      conceptCtrl.recompute(l.conceptLeft, l.conceptTop);
+    });
+
+    document.getElementById('taskGameWindow').addEventListener('click', function(e){
+      e.preventDefault();
+      var l = layout();
+      heroCtrl.reset(l.heroLeft, l.heroTop);
+    });
+    document.getElementById('taskConcept').addEventListener('click', function(e){
+      e.preventDefault();
+      var l = layout();
+      conceptCtrl.reset(l.conceptLeft, l.conceptTop);
+    });
+  })();
+</script>
+
+</body>
+</html>
