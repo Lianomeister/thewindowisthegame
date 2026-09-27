@@ -165,6 +165,77 @@
   .log-window.is-hidden{ display: none !important; }
   .xp-floating.is-hidden{ display: none !important; }
 
+  .browser-window{ width: min(480px, 92vw); }
+  .browser-window .xp-body{ padding: 0; }
+  .browser-toolbar{
+    display: flex; align-items: center; gap: 4px;
+    padding: 5px 6px;
+    background: var(--face);
+    border-bottom: 1px solid var(--face-shadow);
+  }
+  .browser-address{
+    flex: 1;
+    font-family: Tahoma, Verdana, sans-serif;
+    font-size: 11.5px;
+    color: #333;
+    background: #fff;
+    border: 1px solid #7a7a6e;
+    border-top-color: #4b4b46;
+    border-radius: 2px;
+    padding: 3px 6px;
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.15);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .browser-go{
+    font-family: Tahoma, sans-serif;
+    font-size: 11px;
+    padding: 3px 10px;
+    border: 1px solid #7a7a6e;
+    border-radius: 3px;
+    background: linear-gradient(180deg,#fdfdf8,#dedcd0);
+    cursor: pointer;
+  }
+  .browser-page{
+    background: #fff;
+    min-height: 220px;
+    padding: 18px 20px;
+    font-family: Tahoma, Verdana, sans-serif;
+    color: #111;
+  }
+  .browser-page h2{
+    font-size: 16px;
+    margin: 0 0 10px;
+    color: #123ea0;
+  }
+  .browser-page p{
+    font-size: 12.5px;
+    line-height: 1.6;
+    margin: 0 0 12px;
+    color: #222;
+  }
+  .browser-links{
+    list-style: none;
+    margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .browser-link{
+    align-self: flex-start;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 12.5px;
+    color: #1257db;
+    text-decoration: underline;
+    cursor: pointer;
+    font-family: Tahoma, Verdana, sans-serif;
+  }
+  .browser-error{
+    color: #b8341f;
+    font-weight: 700;
+  }
+
   /* paint window */
   .paint-window{ width: min(420px, 92vw); }
   .paint-window .xp-body{ padding: 10px; }
@@ -506,6 +577,37 @@
   <div class="xp-statusbar"><span>Ln 1, Col 1</span><span>Markdown</span></div>
 </div>
 
+<div class="xp-window browser-window xp-floating is-inactive is-hidden" id="browserWindow">
+  <div class="xp-titlebar">
+    <span class="title">
+      <svg class="icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="#4dc9ff" stroke="#1257db" stroke-width="1"/><path d="M1 8h14M8 1a11 11 0 0 1 0 14M8 1a11 11 0 0 0 0 14" fill="none" stroke="#fff" stroke-width="0.8"/></svg>
+      Internet Browser
+    </span>
+    <div class="xp-controls">
+      <button type="button">_</button>
+      <button type="button">□</button>
+      <button type="button" class="close">×</button>
+    </div>
+  </div>
+  <div class="xp-body">
+    <div class="browser-toolbar">
+      <button type="button" class="paint-icon-btn" id="browserBack" title="Back">
+        <svg viewBox="0 0 16 16"><path d="M10 3L5 8l5 5" fill="none" stroke="#333" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button type="button" class="paint-icon-btn" id="browserForward" title="Forward">
+        <svg viewBox="0 0 16 16"><path d="M6 3l5 5-5 5" fill="none" stroke="#333" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button type="button" class="paint-icon-btn" id="browserRefresh" title="Refresh">
+        <svg viewBox="0 0 16 16"><path d="M3 8a5 5 0 1 1 1.6 3.7" fill="none" stroke="#333" stroke-width="1.6" stroke-linecap="round"/><path d="M3 8V4M3 8h4" fill="none" stroke="#333" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <span class="browser-address" id="browserAddress">local://desktop/home</span>
+      <button type="button" class="browser-go" id="browserGo">Go</button>
+    </div>
+    <div class="browser-page" id="browserPage"></div>
+  </div>
+  <div class="xp-statusbar"><span id="browserStatus">Done</span><span>Local Zone</span></div>
+</div>
+
 <div class="xp-window log-window xp-floating is-inactive is-hidden" id="logWindow">
   <div class="xp-titlebar">
     <span class="title">
@@ -615,6 +717,10 @@
     <button type="button" id="taskStory">
       <svg class="icon" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#fff" stroke="#666" stroke-width="1.2"/></svg>
       story.txt
+    </button>
+    <button type="button" id="taskBrowser">
+      <svg class="icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="#4dc9ff" stroke="#1257db" stroke-width="1"/></svg>
+      browser.exe
     </button>
   </div>
   <div class="tray">
@@ -864,6 +970,7 @@
     var conceptWin = document.getElementById('conceptWindow');
     var paintWin = document.getElementById('paintWindow');
     var storyWin = document.getElementById('storyWindow');
+    var browserWin = document.getElementById('browserWindow');
     var logWin = document.getElementById('logWindow');
     var logCtrl = null;
     var posLabel = document.getElementById('pos');
@@ -878,7 +985,9 @@
       var paintTop = window.innerHeight * 0.30;
       var storyLeft = window.innerWidth * 0.55;
       var storyTop = window.innerHeight * 0.60;
-      return { heroLeft: heroLeft, heroTop: heroTop, conceptLeft: conceptLeft, conceptTop: conceptTop, paintLeft: paintLeft, paintTop: paintTop, storyLeft: storyLeft, storyTop: storyTop };
+      var browserLeft = window.innerWidth * 0.20;
+      var browserTop = window.innerHeight * 0.22;
+      return { heroLeft: heroLeft, heroTop: heroTop, conceptLeft: conceptLeft, conceptTop: conceptTop, paintLeft: paintLeft, paintTop: paintTop, storyLeft: storyLeft, storyTop: storyTop, browserLeft: browserLeft, browserTop: browserTop };
     }
 
     var initial = layout();
@@ -938,6 +1047,7 @@
     var conceptCtrl = makeDraggable(conceptWin, '.xp-titlebar', initial.conceptLeft, initial.conceptTop);
     var paintCtrl = makeDraggable(paintWin, '.xp-titlebar', initial.paintLeft, initial.paintTop);
     var storyCtrl = makeDraggable(storyWin, '.xp-titlebar', initial.storyLeft, initial.storyTop);
+    var browserCtrl = makeDraggable(browserWin, '.xp-titlebar', initial.browserLeft, initial.browserTop);
 
     window.addEventListener('resize', function(){
       var l = layout();
@@ -945,6 +1055,7 @@
       conceptCtrl.recompute(l.conceptLeft, l.conceptTop);
       paintCtrl.recompute(l.paintLeft, l.paintTop);
       storyCtrl.recompute(l.storyLeft, l.storyTop);
+      browserCtrl.recompute(l.browserLeft, l.browserTop);
     });
 
     document.getElementById('taskGameWindow').addEventListener('click', function(e){
@@ -970,6 +1081,12 @@
       storyWin.classList.remove('is-hidden');
       var l = layout();
       storyCtrl.reset(l.storyLeft, l.storyTop);
+    });
+    document.getElementById('taskBrowser').addEventListener('click', function(e){
+      e.preventDefault();
+      browserWin.classList.remove('is-hidden');
+      var l = layout();
+      browserCtrl.reset(l.browserLeft, l.browserTop);
     });
 
     function animateWindowClose(win, cb){
@@ -1003,9 +1120,10 @@
       animateWindowClose(conceptWin);
       animateWindowClose(paintWin);
       animateWindowClose(storyWin);
+      animateWindowClose(browserWin);
     };
 
-    ['dragWindow','conceptWindow','paintWindow','storyWindow','logWindow'].forEach(function(id){
+    ['dragWindow','conceptWindow','paintWindow','storyWindow','browserWindow','logWindow'].forEach(function(id){
       var win = document.getElementById(id);
       var btn = win && win.querySelector('.xp-controls .close');
       if(btn){
@@ -1118,6 +1236,90 @@
     };
   })();
 
+  /* ---------- Browser-Fenster ---------- */
+  (function(){
+    var pages = {
+      home: {
+        url: 'local://desktop/home',
+        html: '<h2>Local Start Page</h2>' +
+          '<p>No network connection detected. Showing cached pages only.</p>' +
+          '<ul class="browser-links">' +
+            '<li><button type="button" class="browser-link" data-target="about">about_this_pc</button></li>' +
+            '<li><button type="button" class="browser-link" data-target="restricted">restricted_area</button></li>' +
+          '</ul>'
+      },
+      about: {
+        url: 'local://desktop/about_this_pc',
+        html: '<h2>About This PC</h2>' +
+          '<p>System is running in a limited offline mode.</p>' +
+          '<p>Some files and locations are not accessible from this browser.</p>' +
+          '<ul class="browser-links">' +
+            '<li><button type="button" class="browser-link" data-target="home">back to start page</button></li>' +
+          '</ul>'
+      },
+      restricted: {
+        url: 'local://desktop/restricted_area',
+        html: '<h2 class="browser-error">This page cannot be displayed</h2>' +
+          '<p>You do not have permission to view this content.</p>' +
+          '<ul class="browser-links">' +
+            '<li><button type="button" class="browser-link" data-target="home">back to start page</button></li>' +
+          '</ul>'
+      }
+    };
+
+    var history = ['home'];
+    var historyIndex = 0;
+
+    var pageEl = document.getElementById('browserPage');
+    var addressEl = document.getElementById('browserAddress');
+    var statusEl = document.getElementById('browserStatus');
+
+    function renderPage(key){
+      var page = pages[key] || pages.home;
+      addressEl.textContent = page.url;
+      statusEl.textContent = 'Loading…';
+      pageEl.innerHTML = '';
+      setTimeout(function(){
+        pageEl.innerHTML = page.html;
+        statusEl.textContent = 'Done';
+        pageEl.querySelectorAll('.browser-link').forEach(function(link){
+          link.addEventListener('click', function(){
+            navigateTo(link.getAttribute('data-target'));
+          });
+        });
+      }, 180);
+    }
+
+    function navigateTo(key){
+      if(!pages[key]) return;
+      history = history.slice(0, historyIndex + 1);
+      history.push(key);
+      historyIndex = history.length - 1;
+      renderPage(key);
+    }
+
+    document.getElementById('browserBack').addEventListener('click', function(){
+      if(historyIndex > 0){
+        historyIndex--;
+        renderPage(history[historyIndex]);
+      }
+    });
+    document.getElementById('browserForward').addEventListener('click', function(){
+      if(historyIndex < history.length - 1){
+        historyIndex++;
+        renderPage(history[historyIndex]);
+      }
+    });
+    document.getElementById('browserRefresh').addEventListener('click', function(){
+      renderPage(history[historyIndex]);
+    });
+    document.getElementById('browserGo').addEventListener('click', function(){
+      renderPage(history[historyIndex]);
+    });
+
+    renderPage('home');
+  })();
+
   /* ---------- Paint-Fenster ---------- */
   (function(){
     var canvas = document.getElementById('paintCanvas');
@@ -1128,7 +1330,6 @@
     var isEraser = false;
     var drawing = false;
     var last = null;
-    var STORAGE_KEY = 'witg_paint_v1';
     var undoStack = [];
     var UNDO_LIMIT = 12;
 
@@ -1228,10 +1429,6 @@
     });
 
     document.getElementById('paintSave').addEventListener('click', function(){
-      try{
-        localStorage.setItem(STORAGE_KEY, canvas.toDataURL());
-      }catch(err){}
-
       var exportCanvas = document.createElement('canvas');
       exportCanvas.width = canvas.width;
       exportCanvas.height = canvas.height;
@@ -1258,20 +1455,10 @@
       setTimeout(function(){ document.getElementById('paintStatus').textContent = 'Ready'; }, 1200);
     });
 
-    function loadSaved(){
-      try{
-        var data = localStorage.getItem(STORAGE_KEY);
-        if(data){
-          var img = new Image();
-          img.onload = function(){ ctx.drawImage(img, 0, 0); };
-          img.src = data;
-        }
-      }catch(err){}
-    }
+    try{ localStorage.removeItem('witg_paint_v1'); }catch(err){}
 
     buildSwatches();
     resizeCanvas();
-    loadSaved();
     window.addEventListener('resize', resizeCanvas);
   })();
 </script>
