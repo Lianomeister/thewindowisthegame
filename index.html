@@ -31,14 +31,13 @@
     font-family: Tahoma, Verdana, "Segoe UI", Arial, sans-serif;
     color: var(--ink);
     padding-bottom: 40px;
+    overflow-x: hidden;
   }
 
-  /* desktop backdrop, fixed behind everything */
   .desktop-bg{ position: fixed; inset: 0; z-index: -2; background: linear-gradient(180deg,#1c5cc9 0%,#3f83e0 30%,#8fc2f2 62%,#cfe9fb 82%,#e7f4fd 100%); }
   .hill-back{ position: fixed; left: -10%; right: -10%; bottom: -6%; height: 34vh; z-index: -1; border-radius: 50% 50% 0 0 / 100% 100% 0 0; background: linear-gradient(180deg,#5fae3f,#3f8f27); }
   .hill-front{ position: fixed; left: -20%; right: -5%; bottom: -10%; height: 26vh; z-index: -1; border-radius: 50% 50% 0 0 / 100% 100% 0 0; background: linear-gradient(180deg,#79c94f,#4c9c30); }
 
-  /* generic XP window chrome */
   .xp-window{
     background: var(--face);
     border: 1px solid #0b2fa8;
@@ -82,7 +81,6 @@
     box-shadow: inset 0 1px 0 var(--face-shadow);
   }
 
-  /* hero: the draggable GameWindow */
   .xp-floating{
     position: fixed;
     top: 0; left: 0;
@@ -116,7 +114,6 @@
     margin: 0;
   }
 
-  /* concept window */
   .concept-window{ width: min(460px, 90vw); }
   .concept-window .xp-body{ background: #fff; margin: 2px; }
   .concept-window p{
@@ -125,6 +122,78 @@
     line-height: 1.55;
     color: #111;
     margin: 0;
+  }
+  .markdown-body h3{
+    font-family: "Courier New", Courier, monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 8px;
+    line-height: 1.25;
+  }
+  .markdown-body hr{
+    border: none;
+    border-top: 1px dashed #a8a89c;
+    margin: 0 0 16px;
+  }
+  .markdown-body p{
+    font-family: "Courier New", Courier, monospace;
+    font-size: 13.5px;
+    line-height: 1.75;
+    letter-spacing: .01em;
+    color: #1a1a1a;
+    margin: 0 0 15px;
+  }
+  .markdown-body p:last-child{ margin-bottom: 0; }
+  .markdown-body strong{ font-weight: 700; color: #7a1f1a; }
+  .markdown-body em{ font-style: italic; }
+
+  .log-window{ width: min(420px, 90vw); }
+  .log-window .xp-body{ background: #fff; margin: 2px; }
+  .log-window p{
+    font-family: "Courier New", Courier, monospace;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: #111;
+    margin: 0;
+    white-space: pre-line;
+  }
+  .log-window.is-hidden{ display: none !important; }
+  .xp-floating.is-hidden{ display: none !important; }
+
+  /* paint window */
+  .paint-window{ width: min(420px, 92vw); }
+  .paint-window .xp-body{ padding: 10px; }
+  .paint-toolbar{
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .swatch{
+    width: 18px; height: 18px;
+    border: 1px solid #555;
+    border-radius: 2px;
+    cursor: pointer;
+    padding: 0;
+  }
+  .swatch.is-active{ outline: 2px solid #0b3fc4; outline-offset: 1px; }
+  .paint-btn{
+    font-family: Tahoma, sans-serif;
+    font-size: 11px;
+    padding: 3px 8px;
+    border: 1px solid #7a7a6e;
+    border-radius: 3px;
+    background: linear-gradient(180deg,#fdfdf8,#dedcd0);
+    cursor: pointer;
+  }
+  #paintCanvas{
+    display: block;
+    width: 100%;
+    height: 260px;
+    background: #fff;
+    border: 1px solid #7a7a6e;
+    touch-action: none;
+    cursor: crosshair;
   }
 
   .credit-line{
@@ -136,7 +205,6 @@
     z-index: 40;
   }
 
-  /* taskbar */
   .taskbar{
     position: fixed; left: 0; right: 0; bottom: 0;
     height: 34px;
@@ -181,6 +249,154 @@
     border-left: 1px solid #0a2670;
     font-size: 11.5px; color: #eaf2ff;
   }
+  #clock{
+    cursor: pointer;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: .02em;
+  }
+  #clock.glitch{
+    color: var(--accent-yellow);
+  }
+
+  body.time-shaking{
+    animation: timeShake 70ms infinite;
+  }
+  body{
+    transition: filter 400ms ease;
+  }
+  body.time-graying{
+    filter: grayscale(45%);
+  }
+  body.time-grayed{
+    filter: grayscale(80%);
+  }
+  @keyframes timeShake{
+    0%{ transform: translate(0,0); }
+    20%{ transform: translate(-3px,2px); }
+    40%{ transform: translate(3px,-2px); }
+    60%{ transform: translate(-2px,-3px); }
+    80%{ transform: translate(2px,3px); }
+    100%{ transform: translate(0,0); }
+  }
+
+  .big-clock-window{
+    position: fixed;
+    left: 50%; top: 50%;
+    transform: translate(-50%,-50%) scale(0.8);
+    width: min(300px, 88vw);
+    z-index: 900;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 260ms ease, transform 260ms ease;
+  }
+  .big-clock-window.is-active{
+    opacity: 1;
+    transform: translate(-50%,-50%) scale(1);
+    pointer-events: auto;
+  }
+  .big-clock-body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+    background: #fff;
+    margin: 2px;
+  }
+  .digital-readout{
+    font-family: "Courier New", monospace;
+    font-size: clamp(24px, 6vw, 34px);
+    font-weight: 700;
+    color: #111;
+    background: #fff;
+    border: 1px solid #6b6b60;
+    border-top-color: #4b4b46;
+    padding: 8px 20px;
+    white-space: nowrap;
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.18);
+  }
+  .digital-readout.glitch{ color: #b8341f; }
+
+  .log-window.is-revealing{
+    animation: logFlicker 180ms steps(1, end) 4;
+  }
+  @keyframes logFlicker{
+    0%{ opacity: 0.15; filter: brightness(2); }
+    50%{ opacity: 1; filter: brightness(1); }
+    100%{ opacity: 0.35; filter: brightness(1.6); }
+  }
+  .log-window #logText::after{
+    content: '\2588';
+    animation: logCursor 500ms steps(1) infinite;
+    color: #111;
+  }
+  @keyframes logCursor{
+    0%, 49%{ opacity: 1; }
+    50%, 100%{ opacity: 0; }
+  }
+
+  .bsod{
+    position: fixed; inset: 0;
+    background: #1a5fc4;
+    color: #fff;
+    z-index: 1000;
+    display: none;
+    font-family: "Segoe UI", Tahoma, Verdana, sans-serif;
+    padding: 10vh 8vw;
+    cursor: default;
+  }
+  .bsod.is-active{ display: block; }
+  .bsod-face{
+    font-size: 84px;
+    line-height: 1;
+    margin: 0 0 28px;
+    font-weight: 400;
+  }
+  .bsod-line{
+    font-size: 22px;
+    line-height: 1.6;
+    max-width: 62ch;
+    margin: 0 0 14px;
+    font-weight: 600;
+  }
+  .bsod-objective{
+    margin-top: 40px;
+    font-family: "Courier New", monospace;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    color: #eef7ff;
+    animation: bsodGlitch 130ms infinite;
+  }
+  @keyframes bsodGlitch{
+    0%{ transform: translate(0,0); text-shadow: none; }
+    20%{ transform: translate(-1px,0); text-shadow: 1px 0 rgba(255,80,80,0.5); }
+    40%{ transform: translate(1px,0); text-shadow: -1px 0 rgba(80,220,255,0.5); }
+    60%{ transform: translate(0,1px); text-shadow: none; }
+    80%{ transform: translate(0,-1px); text-shadow: 1px 0 rgba(255,80,80,0.4); }
+    100%{ transform: translate(0,0); text-shadow: none; }
+  }
+  .bsod-hint{
+    position: absolute;
+    bottom: 6vh; left: 8vw;
+    font-size: 12px;
+    color: #a9cdf2;
+  }
+
+  /* screensaver */
+  .screensaver{
+    position: fixed; inset: 0;
+    background: #000;
+    z-index: 999;
+    display: none;
+    overflow: hidden;
+    cursor: none;
+  }
+  .screensaver.is-active{ display: block; }
+  .ss-cd{
+    position: absolute;
+    width: 90px; height: 90px;
+    will-change: transform, filter;
+  }
 </style>
 </head>
 <body>
@@ -188,6 +404,10 @@
 <div class="desktop-bg"></div>
 <div class="hill-back"></div>
 <div class="hill-front"></div>
+
+<audio id="audioMoving" src="narrator_moving.mp3" preload="auto"></audio>
+<audio id="audioIdle" src="narrator_idle.mp3" preload="auto"></audio>
+<audio id="audioTooEarly" src="narrator_too_early.mp3" preload="auto"></audio>
 
 <div class="xp-window drag-window xp-floating" id="dragWindow">
   <div class="xp-titlebar">
@@ -230,7 +450,92 @@
   <div class="xp-statusbar"><span>Ln 1, Col 1</span><span>UTF-8</span></div>
 </div>
 
+<div class="xp-window concept-window xp-floating is-inactive is-hidden" id="storyWindow">
+  <div class="xp-titlebar">
+    <span class="title">
+      <svg class="icon" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#fff"/><rect width="16" height="16" rx="2" fill="none" stroke="#666" stroke-width="1.2"/></svg>
+      story.txt — Notepad
+    </span>
+    <div class="xp-controls">
+      <button type="button">_</button>
+      <button type="button">□</button>
+      <button type="button" class="close">×</button>
+    </div>
+  </div>
+  <div class="xp-body">
+    <div class="markdown-body" id="storyBody"></div>
+  </div>
+  <div class="xp-statusbar"><span>Ln 1, Col 1</span><span>Markdown</span></div>
+</div>
+
+<div class="xp-window log-window xp-floating is-inactive is-hidden" id="logWindow">
+  <div class="xp-titlebar">
+    <span class="title">
+      <svg class="icon" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#fff"/><rect width="16" height="16" rx="2" fill="none" stroke="#666" stroke-width="1.2"/></svg>
+      event_log.dat — Notepad
+    </span>
+    <div class="xp-controls">
+      <button type="button">_</button>
+      <button type="button">□</button>
+      <button type="button" class="close">×</button>
+    </div>
+  </div>
+  <div class="xp-body">
+    <p id="logText"></p>
+  </div>
+  <div class="xp-statusbar"><span>Ln 4, Col 1</span><span>read-only</span></div>
+</div>
+
+<div class="xp-window paint-window xp-floating is-inactive" id="paintWindow">
+  <div class="xp-titlebar">
+    <span class="title">
+      <svg class="icon" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#fff"/><circle cx="5" cy="8" r="3" fill="#ff5a4d"/><circle cx="11" cy="5" r="2.5" fill="#4dc9ff"/></svg>
+      paint.exe
+    </span>
+    <div class="xp-controls">
+      <button type="button">_</button>
+      <button type="button">□</button>
+      <button type="button" class="close">×</button>
+    </div>
+  </div>
+  <div class="xp-body">
+    <div class="paint-toolbar" id="paintSwatches"></div>
+    <canvas id="paintCanvas"></canvas>
+    <div class="paint-toolbar" style="margin-top:8px;">
+      <button type="button" class="paint-btn" id="paintClear">Clear</button>
+      <button type="button" class="paint-btn" id="paintSave">Save</button>
+    </div>
+  </div>
+  <div class="xp-statusbar"><span id="paintStatus">Ready</span><span>256 color</span></div>
+</div>
+
 <p class="credit-line">TINYPEAK STUDIOS · GODOT</p>
+
+<div class="xp-window big-clock-window" id="bigClock">
+  <div class="xp-titlebar">
+    <span class="title">
+      <svg class="icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="#fff" stroke="#666" stroke-width="1"/><line x1="8" y1="8" x2="8" y2="4" stroke="#111" stroke-width="1.2"/><line x1="8" y1="8" x2="11" y2="9" stroke="#111" stroke-width="1.2"/></svg>
+      System Clock
+    </span>
+    <div class="xp-controls">
+      <button type="button">_</button>
+      <button type="button">□</button>
+      <button type="button" class="close">×</button>
+    </div>
+  </div>
+  <div class="xp-body big-clock-body">
+    <div class="digital-readout" id="bigClockTime">00:00</div>
+  </div>
+  <div class="xp-statusbar"><span>Local Time</span><span id="bigClockStatus">synced</span></div>
+</div>
+
+<div class="bsod" id="bsod">
+  <p class="bsod-face">:(</p>
+  <p class="bsod-line">Your PC ran into a problem and needs to restart.</p>
+  <p class="bsod-line">We're just collecting some information, and then we'll restart for you.</p>
+  <p class="bsod-objective" id="bsodObjective">Objective 0000 you are allowed to leave now</p>
+  <p class="bsod-hint">click to continue</p>
+</div>
 
 <div class="taskbar">
   <div class="start-btn">
@@ -250,23 +555,220 @@
       <svg class="icon" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#fff" stroke="#666" stroke-width="1.2"/></svg>
       concept.txt
     </a>
+    <a href="#" id="taskStory" onclick="return false;">
+      <svg class="icon" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#fff" stroke="#666" stroke-width="1.2"/></svg>
+      story.txt
+    </a>
   </div>
   <div class="tray">
     <span>waitlist open</span>
-    <span id="clock">00:00</span>
+    <span id="clock" title="click me">00:00</span>
   </div>
 </div>
 
-<script>
-  function tick(){
-    var d = new Date();
-    var h = String(d.getHours()).padStart(2,'0');
-    var m = String(d.getMinutes()).padStart(2,'0');
-    document.getElementById('clock').textContent = h + ':' + m;
-  }
-  tick();
-  setInterval(tick, 15000);
+<div class="screensaver" id="screensaver">
+</div>
 
+<script>
+  /* ---------- Uhr / Taskbar-Zeit ---------- */
+  var clockInterval = null;
+  var clockReversing = false;
+
+  var frozenDate = null;
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function formatDateTime(d){
+    return pad(d.getDate()) + '.' + pad(d.getMonth()+1) + '. ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  }
+  function tick(){
+    var el = document.getElementById('clock');
+    if(clockReversing || frozenDate) return;
+    var now = new Date();
+    el.textContent = formatDateTime(now);
+  }
+  function startClockInterval(){
+    if(clockInterval) clearInterval(clockInterval);
+    clockInterval = setInterval(tick, 15000);
+  }
+
+  tick();
+  startClockInterval();
+
+  function reverseClock(){
+    if(clockReversing || frozenDate) return;
+    clockReversing = true;
+    if(clockInterval) clearInterval(clockInterval);
+
+    var el = document.getElementById('clock');
+    var bigClock = document.getElementById('bigClock');
+    var bigTime = document.getElementById('bigClockTime');
+
+    var current = new Date();
+    bigTime.textContent = formatDateTime(current);
+    bigClock.classList.add('is-active');
+
+    setTimeout(function(){
+      el.classList.add('glitch');
+      bigTime.classList.add('glitch');
+      document.body.classList.add('time-shaking');
+      document.body.classList.add('time-graying');
+      if(window.closeAllWindowsForTimeTravel) window.closeAllWindowsForTimeTravel();
+      if(window.showTimeTravelLog) window.showTimeTravelLog();
+
+      var stopTime = new Date(current.getTime() - 24*60*60*1000);
+      var stepMs = 6 * 60 * 1000; /* 6 Minuten pro Tick */
+      var intervalMs = 18;
+
+      var timer = setInterval(function(){
+        current = new Date(current.getTime() - stepMs);
+        if(current.getTime() <= stopTime.getTime()){
+          current = stopTime;
+          el.textContent = formatDateTime(current);
+          bigTime.textContent = formatDateTime(current);
+          clearInterval(timer);
+          document.body.classList.remove('time-shaking');
+          document.body.classList.remove('time-graying');
+          document.body.classList.add('time-grayed');
+          setTimeout(function(){
+            el.classList.remove('glitch');
+            bigTime.classList.remove('glitch');
+            bigClock.classList.remove('is-active');
+            clockReversing = false;
+            frozenDate = formatDateTime(current);
+          }, 700);
+          return;
+        }
+        el.textContent = formatDateTime(current);
+        bigTime.textContent = formatDateTime(current);
+      }, intervalMs);
+    }, 900);
+  }
+  document.getElementById('clock').addEventListener('click', reverseClock);
+
+  /* ---------- Narrator-Audio ---------- */
+  var audioMoving = document.getElementById('audioMoving');
+  var audioIdle = document.getElementById('audioIdle');
+  var audioTooEarly = document.getElementById('audioTooEarly');
+  var lastMovingPlay = 0;
+  var movingCooldown = 20000;
+
+  function playMoving(){
+    var now = Date.now();
+    if(now - lastMovingPlay < movingCooldown) return;
+    lastMovingPlay = now;
+    audioMoving.currentTime = 0;
+    audioMoving.play().catch(function(){});
+  }
+
+  var idleTimer = null;
+  var idlePlayed = false;
+  function scheduleIdleLine(){
+    if(idleTimer) clearTimeout(idleTimer);
+    idlePlayed = false;
+    var delay = 90000 + Math.random() * 60000; /* 90–150s */
+    idleTimer = setTimeout(function(){
+      if(!idlePlayed){
+        idlePlayed = true;
+        audioIdle.currentTime = 0;
+        audioIdle.play().catch(function(){});
+      }
+    }, delay);
+  }
+  scheduleIdleLine();
+
+  /* ---------- Screensaver ---------- */
+  var ssEl = document.getElementById('screensaver');
+  var ssTimer = null;
+  var ssActive = false;
+  var ssRaf = null;
+  var ssCD = null;
+  var ssHue = 0;
+  var ssSpin = 0;
+
+  function buildScreensaverCD(){
+    ssEl.querySelectorAll('.ss-cd').forEach(function(n){ n.remove(); });
+    var div = document.createElement('div');
+    div.className = 'ss-cd';
+    div.innerHTML =
+      '<svg viewBox="0 0 90 90" width="90" height="90">' +
+        '<defs><linearGradient id="cdShine" x1="0%" y1="0%" x2="100%" y2="100%">' +
+          '<stop offset="0%" stop-color="#fff" stop-opacity="0.9"/>' +
+          '<stop offset="35%" stop-color="#fff" stop-opacity="0.15"/>' +
+          '<stop offset="55%" stop-color="#000" stop-opacity="0.05"/>' +
+          '<stop offset="100%" stop-color="#fff" stop-opacity="0.35"/>' +
+        '</linearGradient></defs>' +
+        '<circle cx="45" cy="45" r="43" fill="#b8c6d6"/>' +
+        '<circle cx="45" cy="45" r="43" fill="url(#cdShine)"/>' +
+        '<circle cx="45" cy="45" r="43" fill="none" stroke="#8fa0b3" stroke-width="1"/>' +
+        '<circle cx="45" cy="45" r="14" fill="none" stroke="#8fa0b3" stroke-width="0.6" opacity="0.6"/>' +
+        '<circle cx="45" cy="45" r="9" fill="#d9dfe6"/>' +
+        '<circle cx="45" cy="45" r="3.2" fill="#222"/>' +
+      '</svg>';
+    ssEl.appendChild(div);
+    ssCD = {
+      el: div,
+      x: Math.random() * (window.innerWidth - 90),
+      y: Math.random() * (window.innerHeight - 90),
+      vx: (Math.random() * 0.5 + 0.5) * (Math.random() < 0.5 ? -1 : 1),
+      vy: (Math.random() * 0.5 + 0.5) * (Math.random() < 0.5 ? -1 : 1)
+    };
+    ssHue = 0;
+  }
+
+  function ssStep(){
+    if(!ssActive) return;
+    var w = window.innerWidth, h = window.innerHeight;
+    var ic = ssCD;
+    ic.x += ic.vx;
+    ic.y += ic.vy;
+    var bounced = false;
+    if(ic.x <= 0 || ic.x >= w - 90){ ic.vx *= -1; bounced = true; }
+    if(ic.y <= 0 || ic.y >= h - 90){ ic.vy *= -1; bounced = true; }
+    if(bounced){
+      ssHue = Math.floor(Math.random() * 360);
+    }
+    ssSpin = (ssSpin + 0.3) % 360;
+    ic.el.style.transform = 'translate(' + ic.x + 'px,' + ic.y + 'px) rotate(' + ssSpin + 'deg)';
+    ic.el.style.filter = 'hue-rotate(' + ssHue + 'deg) saturate(2.4) brightness(1.1)';
+    ssRaf = requestAnimationFrame(ssStep);
+  }
+
+  function startScreensaver(){
+    if(ssActive) return;
+    ssActive = true;
+    buildScreensaverCD();
+    ssEl.classList.add('is-active');
+    ssRaf = requestAnimationFrame(ssStep);
+  }
+  function stopScreensaver(){
+    if(!ssActive) return;
+    ssActive = false;
+    ssEl.classList.remove('is-active');
+    if(ssRaf) cancelAnimationFrame(ssRaf);
+  }
+  function scheduleScreensaver(){
+    if(ssTimer) clearTimeout(ssTimer);
+    ssTimer = setTimeout(startScreensaver, 100000);
+  }
+  scheduleScreensaver();
+
+  function registerActivity(e){
+    if(ssActive){
+      if(e.type === 'pointerdown'){
+        stopScreensaver();
+        scheduleScreensaver();
+        scheduleIdleLine();
+      }
+      return;
+    }
+    scheduleScreensaver();
+    scheduleIdleLine();
+  }
+  ['pointerdown','pointermove','keydown','wheel'].forEach(function(evt){
+    window.addEventListener(evt, registerActivity, { passive: true });
+  });
+
+  /* ---------- Fenster-Drag ---------- */
   (function(){
     function makeDraggable(win, handleSelector, initX, initY, onMove){
       var handle = win.querySelector(handleSelector);
@@ -275,12 +777,6 @@
       var startX = 0, startY = 0, baseX = 0, baseY = 0;
 
       function clampAndApply(){
-        var rect = win.getBoundingClientRect();
-        var w = rect.width, h = rect.height;
-        var minX = 6, maxX = window.innerWidth - w - 6;
-        var minY = 6, maxY = window.innerHeight - h - 44;
-        x = Math.max(minX, Math.min(maxX, x));
-        y = Math.max(minY, Math.min(maxY, y));
         win.style.transform = 'translate(' + x + 'px,' + y + 'px)';
         if(onMove) onMove(x, y);
       }
@@ -291,6 +787,7 @@
         handle.setPointerCapture(e.pointerId);
         startX = e.clientX; startY = e.clientY;
         baseX = x; baseY = y;
+        playMoving();
       });
       handle.addEventListener('pointermove', function(e){
         if(!dragging) return;
@@ -308,6 +805,10 @@
 
     var heroWin = document.getElementById('dragWindow');
     var conceptWin = document.getElementById('conceptWindow');
+    var paintWin = document.getElementById('paintWindow');
+    var storyWin = document.getElementById('storyWindow');
+    var logWin = document.getElementById('logWindow');
+    var logCtrl = null;
     var posLabel = document.getElementById('pos');
 
     function layout(){
@@ -316,32 +817,338 @@
       var heroTop = window.innerHeight * 0.20;
       var conceptLeft = window.innerWidth * 0.125;
       var conceptTop = window.innerHeight * 0.565;
-      return { heroLeft: heroLeft, heroTop: heroTop, conceptLeft: conceptLeft, conceptTop: conceptTop };
+      var paintLeft = window.innerWidth * 0.60;
+      var paintTop = window.innerHeight * 0.30;
+      var storyLeft = window.innerWidth * 0.55;
+      var storyTop = window.innerHeight * 0.60;
+      return { heroLeft: heroLeft, heroTop: heroTop, conceptLeft: conceptLeft, conceptTop: conceptTop, paintLeft: paintLeft, paintTop: paintTop, storyLeft: storyLeft, storyTop: storyTop };
     }
 
     var initial = layout();
+    var bsodArmed = true;
+
+    function overlapArea(a, b){
+      var x1 = Math.max(a.left, b.left), x2 = Math.min(a.right, b.right);
+      var y1 = Math.max(a.top, b.top), y2 = Math.min(a.bottom, b.bottom);
+      var w = Math.max(0, x2 - x1), h = Math.max(0, y2 - y1);
+      return w * h;
+    }
+
+    function checkStartCollision(){
+      if(!bsodArmed) return;
+      var winRect = heroWin.getBoundingClientRect();
+      var startRect = document.querySelector('.start-btn').getBoundingClientRect();
+      var area = overlapArea(winRect, startRect);
+      var startArea = startRect.width * startRect.height;
+      if(area >= startArea * 0.9){
+        bsodArmed = false;
+        triggerBSOD();
+      }
+    }
+
+    var objectiveTimer = null;
+    function startObjectiveFlicker(){
+      var el = document.getElementById('bsodObjective');
+      function roll(){
+        var n = Math.floor(1000 + Math.random() * 9000);
+        el.textContent = 'Objective ' + n + ' you are allowed to leave now';
+      }
+      roll();
+      objectiveTimer = setInterval(roll, 60);
+    }
+    function stopObjectiveFlicker(){
+      if(objectiveTimer) clearInterval(objectiveTimer);
+      objectiveTimer = null;
+    }
+
+    function triggerBSOD(){
+      var el = document.getElementById('bsod');
+      el.classList.add('is-active');
+      startObjectiveFlicker();
+      animateWindowClose(heroWin);
+      el.addEventListener('click', function onClick(){
+        el.removeEventListener('click', onClick);
+        stopObjectiveFlicker();
+        el.classList.remove('is-active');
+        bsodArmed = true;
+      });
+    }
 
     var heroCtrl = makeDraggable(heroWin, '.xp-titlebar', initial.heroLeft, initial.heroTop, function(x, y){
       posLabel.textContent = 'x: ' + Math.round(x) + ', y: ' + Math.round(y);
+      checkStartCollision();
     });
     var conceptCtrl = makeDraggable(conceptWin, '.xp-titlebar', initial.conceptLeft, initial.conceptTop);
+    var paintCtrl = makeDraggable(paintWin, '.xp-titlebar', initial.paintLeft, initial.paintTop);
+    var storyCtrl = makeDraggable(storyWin, '.xp-titlebar', initial.storyLeft, initial.storyTop);
 
     window.addEventListener('resize', function(){
       var l = layout();
       heroCtrl.recompute(l.heroLeft, l.heroTop);
       conceptCtrl.recompute(l.conceptLeft, l.conceptTop);
+      paintCtrl.recompute(l.paintLeft, l.paintTop);
+      storyCtrl.recompute(l.storyLeft, l.storyTop);
     });
 
     document.getElementById('taskGameWindow').addEventListener('click', function(e){
       e.preventDefault();
+      heroWin.classList.remove('is-hidden');
       var l = layout();
       heroCtrl.reset(l.heroLeft, l.heroTop);
     });
     document.getElementById('taskConcept').addEventListener('click', function(e){
       e.preventDefault();
+      conceptWin.classList.remove('is-hidden');
       var l = layout();
       conceptCtrl.reset(l.conceptLeft, l.conceptTop);
     });
+    document.getElementById('taskStory').addEventListener('click', function(e){
+      e.preventDefault();
+      storyWin.classList.remove('is-hidden');
+      var l = layout();
+      storyCtrl.reset(l.storyLeft, l.storyTop);
+    });
+
+    function animateWindowClose(win, cb){
+      if(win.classList.contains('is-hidden')) { if(cb) cb(); return; }
+      var baseTransform = win.style.transform || '';
+      var duration = 260;
+      var startTs = null;
+      win.style.willChange = 'transform, opacity';
+      function frame(ts){
+        if(startTs === null) startTs = ts;
+        var t = Math.min(1, (ts - startTs) / duration);
+        var eased = t * t;
+        var scale = 1 - 0.55 * eased;
+        win.style.opacity = String(1 - eased);
+        win.style.transform = baseTransform + ' scale(' + scale + ')';
+        if(t < 1){
+          requestAnimationFrame(frame);
+        } else {
+          win.classList.add('is-hidden');
+          win.style.opacity = '';
+          win.style.transform = baseTransform;
+          win.style.willChange = '';
+          if(cb) cb();
+        }
+      }
+      requestAnimationFrame(frame);
+    }
+
+    window.closeAllWindowsForTimeTravel = function(){
+      animateWindowClose(heroWin);
+      animateWindowClose(conceptWin);
+      animateWindowClose(paintWin);
+      animateWindowClose(storyWin);
+    };
+
+    ['dragWindow','conceptWindow','paintWindow','storyWindow','logWindow'].forEach(function(id){
+      var win = document.getElementById(id);
+      var btn = win && win.querySelector('.xp-controls .close');
+      if(btn){
+        btn.addEventListener('click', function(){
+          animateWindowClose(win);
+        });
+      }
+    });
+
+    var LOG_LINES = [
+      'Object 3582 - closed window',
+      'Object 2854 - finished',
+      'Object 9523 - Started Training',
+      'Object 5650 - Unknown'
+    ];
+
+    function typeLogLines(el, lines, cb){
+      el.textContent = '';
+      var li = 0;
+      function nextLine(){
+        if(li >= lines.length){ if(cb) cb(); return; }
+        var line = lines[li];
+        var buffer = el.textContent;
+        var ci = 0;
+        function typeChar(){
+          if(ci <= line.length){
+            el.textContent = buffer + line.slice(0, ci);
+            ci++;
+            setTimeout(typeChar, 18);
+          } else {
+            el.textContent = buffer + line + '\n';
+            li++;
+            setTimeout(nextLine, 260);
+          }
+        }
+        typeChar();
+      }
+      nextLine();
+    }
+
+    function escapeHtml(s){
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+    function inlineMarkdown(s){
+      s = escapeHtml(s);
+      s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      s = s.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+      return s;
+    }
+    function markdownToHtml(md){
+      var blocks = md.trim().split(/\n\s*\n/);
+      var html = '';
+      blocks.forEach(function(block){
+        var lines = block.split('\n');
+        var headingMatch = lines[0].match(/^#{1,6}\s+(.*)$/);
+        if(headingMatch){
+          html += '<h3>' + inlineMarkdown(headingMatch[1]) + '</h3><hr>';
+          lines.shift();
+          if(lines.length){
+            html += '<p>' + inlineMarkdown(lines.join('\n')).replace(/\n/g, '<br>') + '</p>';
+          }
+        } else {
+          html += '<p>' + inlineMarkdown(block).replace(/\n/g, '<br>') + '</p>';
+        }
+      });
+      return html;
+    }
+
+    var STORY_MARKDOWN =
+      '### "The Window Is The Game"\n' +
+      'is a meta-adventure where the player initially believes\n' +
+      'they\u2019re playing a normal puzzle game.\n' +
+      'But shortly after, they discover that the game is actually running\n' +
+      'on a virtual, fake desktop.\n\n' +
+      'By digging through files and exploring various apps,\n' +
+      'the player slowly uncovers the true story behind everything\n' +
+      'they encounter on this artificial system.\n\n' +
+      'But beware of the **Narrator**.\n' +
+      'At first, he seems friendly and helpful,\n' +
+      'yet over time he becomes increasingly hostile,\n' +
+      'closing apps you open, interfering with your progress,\n' +
+      'and manipulating the desktop itself to stop you.';
+
+    var storyBodyEl = document.getElementById('storyBody');
+    if(storyBodyEl){
+      storyBodyEl.innerHTML = markdownToHtml(STORY_MARKDOWN);
+    }
+
+    window.showTimeTravelLog = function(){
+      logWin.classList.remove('is-hidden');
+      logWin.classList.remove('is-inactive');
+      logWin.classList.add('is-revealing');
+      var left = window.innerWidth * 0.30;
+      var top = window.innerHeight * 0.28;
+      if(!logCtrl){
+        logCtrl = makeDraggable(logWin, '.xp-titlebar', left, top);
+      } else {
+        logCtrl.reset(left, top);
+      }
+      setTimeout(function(){
+        logWin.classList.remove('is-revealing');
+        typeLogLines(document.getElementById('logText'), LOG_LINES);
+      }, 750);
+      setTimeout(function(){
+        if(audioTooEarly){
+          audioTooEarly.currentTime = 0;
+          audioTooEarly.play().catch(function(){});
+        }
+      }, 900);
+    };
+  })();
+
+  /* ---------- Paint-Fenster ---------- */
+  (function(){
+    var canvas = document.getElementById('paintCanvas');
+    var ctx = canvas.getContext('2d');
+    var colors = ['#111111','#ff5a4d','#4dc9ff','#7fe066','#ffcc33','#c084fc','#ffffff'];
+    var currentColor = colors[0];
+    var drawing = false;
+    var last = null;
+    var STORAGE_KEY = 'witg_paint_v1';
+
+    function resizeCanvas(){
+      var rect = canvas.getBoundingClientRect();
+      var prev = null;
+      if(canvas.width > 0 && canvas.height > 0){
+        prev = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      }
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if(prev){ ctx.putImageData(prev, 0, 0); }
+    }
+
+    function buildSwatches(){
+      var wrap = document.getElementById('paintSwatches');
+      colors.forEach(function(c, i){
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'swatch' + (i === 0 ? ' is-active' : '');
+        b.style.background = c;
+        b.addEventListener('click', function(){
+          currentColor = c;
+          wrap.querySelectorAll('.swatch').forEach(function(s){ s.classList.remove('is-active'); });
+          b.classList.add('is-active');
+        });
+        wrap.appendChild(b);
+      });
+    }
+
+    function getPos(e){
+      var rect = canvas.getBoundingClientRect();
+      return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    }
+
+    canvas.addEventListener('pointerdown', function(e){
+      drawing = true;
+      canvas.setPointerCapture(e.pointerId);
+      last = getPos(e);
+      document.getElementById('paintStatus').textContent = 'Drawing…';
+    });
+    canvas.addEventListener('pointermove', function(e){
+      if(!drawing) return;
+      var p = getPos(e);
+      ctx.strokeStyle = currentColor;
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(last.x, last.y);
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+      last = p;
+    });
+    canvas.addEventListener('pointerup', function(){
+      drawing = false;
+      document.getElementById('paintStatus').textContent = 'Ready';
+    });
+
+    document.getElementById('paintClear').addEventListener('click', function(){
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    });
+    document.getElementById('paintSave').addEventListener('click', function(){
+      try{
+        localStorage.setItem(STORAGE_KEY, canvas.toDataURL());
+        document.getElementById('paintStatus').textContent = 'Saved';
+        setTimeout(function(){ document.getElementById('paintStatus').textContent = 'Ready'; }, 1200);
+      }catch(err){}
+    });
+
+    function loadSaved(){
+      try{
+        var data = localStorage.getItem(STORAGE_KEY);
+        if(data){
+          var img = new Image();
+          img.onload = function(){ ctx.drawImage(img, 0, 0); };
+          img.src = data;
+        }
+      }catch(err){}
+    }
+
+    buildSwatches();
+    resizeCanvas();
+    loadSaved();
+    window.addEventListener('resize', resizeCanvas);
   })();
 </script>
 
