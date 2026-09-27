@@ -190,6 +190,34 @@
     background: linear-gradient(180deg,#bcd4f5,#8fb4e8);
     box-shadow: inset 1px 1px 2px rgba(0,0,0,0.3);
   }
+  .paint-tools{ align-items: center; }
+  .paint-icon-btn{
+    width: 26px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0;
+    border: 1px solid #7a7a6e;
+    border-radius: 3px;
+    background: linear-gradient(180deg,#fdfdf8,#dedcd0);
+    cursor: pointer;
+  }
+  .paint-icon-btn svg{ width: 14px; height: 14px; display: block; }
+  .paint-icon-btn.is-active{
+    background: linear-gradient(180deg,#bcd4f5,#8fb4e8);
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.3);
+  }
+  .paint-sep{
+    width: 1px; height: 18px;
+    background: #b9b9ac;
+    margin: 0 2px;
+  }
+  .dot{
+    display: block;
+    border-radius: 50%;
+    background: #222;
+  }
+  .dot-s{ width: 4px; height: 4px; }
+  .dot-m{ width: 6px; height: 6px; }
+  .dot-l{ width: 9px; height: 9px; }
   #paintCanvas{
     display: block;
     width: 100%;
@@ -505,14 +533,24 @@
   <div class="xp-body">
     <div class="paint-toolbar" id="paintSwatches"></div>
     <canvas id="paintCanvas"></canvas>
-    <div class="paint-toolbar" style="margin-top:8px;">
-      <button type="button" class="paint-btn" id="paintEraser">Eraser</button>
-      <button type="button" class="paint-btn size-btn is-active" data-size="2">S</button>
-      <button type="button" class="paint-btn size-btn" data-size="4">M</button>
-      <button type="button" class="paint-btn size-btn" data-size="9">L</button>
-      <button type="button" class="paint-btn" id="paintUndo">Undo</button>
-      <button type="button" class="paint-btn" id="paintClear">Clear</button>
-      <button type="button" class="paint-btn" id="paintSave">Save as PNG</button>
+    <div class="paint-toolbar paint-tools" style="margin-top:8px;">
+      <button type="button" class="paint-icon-btn" id="paintEraser" title="Eraser">
+        <svg viewBox="0 0 16 16"><rect x="3" y="6" width="10" height="6" rx="1" transform="rotate(-20 8 9)" fill="#f5b8c4" stroke="#7a4a52" stroke-width="0.8"/></svg>
+      </button>
+      <span class="paint-sep"></span>
+      <button type="button" class="paint-icon-btn size-btn is-active" data-size="2" title="Thin"><span class="dot dot-s"></span></button>
+      <button type="button" class="paint-icon-btn size-btn" data-size="4" title="Medium"><span class="dot dot-m"></span></button>
+      <button type="button" class="paint-icon-btn size-btn" data-size="9" title="Thick"><span class="dot dot-l"></span></button>
+      <span class="paint-sep"></span>
+      <button type="button" class="paint-icon-btn" id="paintUndo" title="Undo">
+        <svg viewBox="0 0 16 16"><path d="M3 8a5 5 0 1 1 1.6 3.7" fill="none" stroke="#333" stroke-width="1.6" stroke-linecap="round"/><path d="M3 8V4M3 8h4" fill="none" stroke="#333" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button type="button" class="paint-icon-btn" id="paintClear" title="Clear">
+        <svg viewBox="0 0 16 16"><rect x="4" y="6" width="8" height="7" rx="1" fill="#e8e8e0" stroke="#555" stroke-width="1"/><path d="M3 6h10" stroke="#555" stroke-width="1"/><path d="M6 6V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2" fill="none" stroke="#555" stroke-width="1"/></svg>
+      </button>
+      <button type="button" class="paint-icon-btn" id="paintSave" title="Save as PNG">
+        <svg viewBox="0 0 16 16"><path d="M8 2v8" stroke="#2467e0" stroke-width="1.6" stroke-linecap="round"/><path d="M4.5 7L8 10.5L11.5 7" fill="none" stroke="#2467e0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 12.5h10" stroke="#2467e0" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
     </div>
   </div>
   <div class="xp-statusbar"><span id="paintStatus">Ready</span><span>256 color</span></div>
