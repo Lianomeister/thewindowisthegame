@@ -32,6 +32,10 @@
     color: var(--ink);
     padding-bottom: 40px;
     overflow-x: hidden;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
 
   .desktop-bg{ position: fixed; inset: 0; z-index: -2; background: linear-gradient(180deg,#1c5cc9 0%,#3f83e0 30%,#8fc2f2 62%,#cfe9fb 82%,#e7f4fd 100%); }
@@ -580,7 +584,7 @@
   <p class="bsod-face">:(</p>
   <p class="bsod-line">Your PC ran into a problem and needs to restart.</p>
   <p class="bsod-line">We're just collecting some information, and then we'll restart for you.</p>
-  <p class="bsod-objective" id="bsodObjective">You are not supposed to leave already Specimen 0000</p>
+  <p class="bsod-objective" id="bsodObjective">You are not supposed to leave... yet... Specimen 0000</p>
   <p class="bsod-hint">click to continue</p>
 </div>
 
@@ -898,7 +902,7 @@
       var el = document.getElementById('bsodObjective');
       function roll(){
         var n = Math.floor(1000 + Math.random() * 9000);
-        el.textContent = 'You are not supposed to leave already Specimen ' + n;
+        el.textContent = 'You are not supposed to leave... yet... Specimen ' + n;
       }
       roll();
       objectiveTimer = setInterval(roll, 60);
