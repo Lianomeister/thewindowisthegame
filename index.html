@@ -186,6 +186,10 @@
     background: linear-gradient(180deg,#fdfdf8,#dedcd0);
     cursor: pointer;
   }
+  .paint-btn.is-active{
+    background: linear-gradient(180deg,#bcd4f5,#8fb4e8);
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.3);
+  }
   #paintCanvas{
     display: block;
     width: 100%;
@@ -502,8 +506,13 @@
     <div class="paint-toolbar" id="paintSwatches"></div>
     <canvas id="paintCanvas"></canvas>
     <div class="paint-toolbar" style="margin-top:8px;">
+      <button type="button" class="paint-btn" id="paintEraser">Eraser</button>
+      <button type="button" class="paint-btn size-btn is-active" data-size="2">S</button>
+      <button type="button" class="paint-btn size-btn" data-size="4">M</button>
+      <button type="button" class="paint-btn size-btn" data-size="9">L</button>
+      <button type="button" class="paint-btn" id="paintUndo">Undo</button>
       <button type="button" class="paint-btn" id="paintClear">Clear</button>
-      <button type="button" class="paint-btn" id="paintSave">Save</button>
+      <button type="button" class="paint-btn" id="paintSave">Save as PNG</button>
     </div>
   </div>
   <div class="xp-statusbar"><span id="paintStatus">Ready</span><span>256 color</span></div>
@@ -1061,9 +1070,13 @@
     var ctx = canvas.getContext('2d');
     var colors = ['#111111','#ff5a4d','#4dc9ff','#7fe066','#ffcc33','#c084fc','#ffffff'];
     var currentColor = colors[0];
+    var brushSize = 2;
+    var isEraser = false;
     var drawing = false;
     var last = null;
     var STORAGE_KEY = 'witg_paint_v1';
+    var undoStack = [];
+    var UNDO_LIMIT = 12;
 
     function resizeCanvas(){
       var rect = canvas.getBoundingClientRect();
@@ -1087,6 +1100,8 @@
         b.style.background = c;
         b.addEventListener('click', function(){
           currentColor = c;
+          isEraser = false;
+          document.getElementById('paintEraser').classList.remove('is-active');
           wrap.querySelectorAll('.swatch').forEach(function(s){ s.classList.remove('is-active'); });
           b.classList.add('is-active');
         });
@@ -1099,17 +1114,25 @@
       return { x: e.clientX - rect.left, y: e.clientY - rect.top };
     }
 
+    function pushUndoSnapshot(){
+      try{
+        undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+        if(undoStack.length > UNDO_LIMIT) undoStack.shift();
+      }catch(err){}
+    }
+
     canvas.addEventListener('pointerdown', function(e){
       drawing = true;
       canvas.setPointerCapture(e.pointerId);
+      pushUndoSnapshot();
       last = getPos(e);
-      document.getElementById('paintStatus').textContent = 'Drawing…';
+      document.getElementById('paintStatus').textContent = isEraser ? 'Erasing…' : 'Drawing…';
     });
     canvas.addEventListener('pointermove', function(e){
       if(!drawing) return;
       var p = getPos(e);
-      ctx.strokeStyle = currentColor;
-      ctx.lineWidth = 3;
+      ctx.strokeStyle = isEraser ? '#ffffff' : currentColor;
+      ctx.lineWidth = brushSize;
       ctx.lineCap = 'round';
       ctx.beginPath();
       ctx.moveTo(last.x, last.y);
@@ -1122,16 +1145,47 @@
       document.getElementById('paintStatus').textContent = 'Ready';
     });
 
+    document.getElementById('paintEraser').addEventListener('click', function(){
+      isEraser = !isEraser;
+      this.classList.toggle('is-active', isEraser);
+      if(isEraser){
+        document.getElementById('paintSwatches').querySelectorAll('.swatch').forEach(function(s){ s.classList.remove('is-active'); });
+      }
+    });
+
+    document.querySelectorAll('.size-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        brushSize = parseInt(btn.getAttribute('data-size'), 10);
+        document.querySelectorAll('.size-btn').forEach(function(b){ b.classList.remove('is-active'); });
+        btn.classList.add('is-active');
+      });
+    });
+
+    document.getElementById('paintUndo').addEventListener('click', function(){
+      if(!undoStack.length) return;
+      var snapshot = undoStack.pop();
+      ctx.putImageData(snapshot, 0, 0);
+    });
+
     document.getElementById('paintClear').addEventListener('click', function(){
+      pushUndoSnapshot();
       ctx.fillStyle = '#fff';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     });
+
     document.getElementById('paintSave').addEventListener('click', function(){
       try{
         localStorage.setItem(STORAGE_KEY, canvas.toDataURL());
-        document.getElementById('paintStatus').textContent = 'Saved';
-        setTimeout(function(){ document.getElementById('paintStatus').textContent = 'Ready'; }, 1200);
       }catch(err){}
+      var link = document.createElement('a');
+      var stamp = new Date().toISOString().replace(/[:.]/g, '-');
+      link.download = 'painting-' + stamp + '.png';
+      link.href = canvas.toDataURL('image/png');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      document.getElementById('paintStatus').textContent = 'Downloaded';
+      setTimeout(function(){ document.getElementById('paintStatus').textContent = 'Ready'; }, 1200);
     });
 
     function loadSaved(){
