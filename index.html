@@ -263,21 +263,23 @@
   .start-btn .logo{ width: 15px; height: 15px; flex: none; }
   .taskbar-sep{ width: 1px; background: rgba(255,255,255,0.25); margin: 5px 4px; }
   .taskbar-items{ display: flex; align-items: stretch; gap: 4px; padding: 3px 4px; flex: 1; overflow-x: auto; }
-  .taskbar-items a{
+  .taskbar-items button{
     display: flex; align-items: center; gap: 6px;
     padding: 0 10px;
+    font-family: Tahoma, Verdana, sans-serif;
     font-size: 12px; color: #fff;
     text-decoration: none;
     background: linear-gradient(180deg,#3f7fe8,#1c52c9);
     border: 1px solid #0c2f8f;
     border-radius: 3px;
     white-space: nowrap;
+    cursor: pointer;
   }
-  .taskbar-items a.is-pressed{
+  .taskbar-items button.is-pressed{
     background: linear-gradient(180deg,#0f3caa,#1c52c9);
     box-shadow: inset 1px 1px 3px rgba(0,0,0,0.5);
   }
-  .taskbar-items a .icon{ width: 12px; height: 12px; flex: none; }
+  .taskbar-items button .icon{ width: 12px; height: 12px; flex: none; }
   .tray{
     display: flex; align-items: center; gap: 8px;
     padding: 0 12px;
@@ -598,22 +600,22 @@
   </div>
   <div class="taskbar-sep"></div>
   <div class="taskbar-items">
-    <a href="#" id="taskGameWindow" class="is-pressed" onclick="return false;">
+    <button type="button" id="taskGameWindow" class="is-pressed">
       <svg class="icon" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#ffd23f"/></svg>
       GameWindow.exe
-    </a>
-    <a href="#" id="taskConcept" onclick="return false;">
+    </button>
+    <button type="button" id="taskConcept">
       <svg class="icon" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#fff" stroke="#666" stroke-width="1.2"/></svg>
       concept.txt
-    </a>
-    <a href="#" id="taskPaint" onclick="return false;">
+    </button>
+    <button type="button" id="taskPaint">
       <svg class="icon" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#fff"/><circle cx="5" cy="8" r="3" fill="#ff5a4d"/></svg>
       paint.exe
-    </a>
-    <a href="#" id="taskStory" onclick="return false;">
+    </button>
+    <button type="button" id="taskStory">
       <svg class="icon" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#fff" stroke="#666" stroke-width="1.2"/></svg>
       story.txt
-    </a>
+    </button>
   </div>
   <div class="tray">
     <span>waitlist open</span>
