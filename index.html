@@ -533,7 +533,7 @@
   <p class="bsod-face">:(</p>
   <p class="bsod-line">Your PC ran into a problem and needs to restart.</p>
   <p class="bsod-line">We're just collecting some information, and then we'll restart for you.</p>
-  <p class="bsod-objective" id="bsodObjective">Objective 0000 you are allowed to leave now</p>
+  <p class="bsod-objective" id="bsodObjective">You are not supposed to leave already Specimen 0000</p>
   <p class="bsod-hint">click to continue</p>
 </div>
 
@@ -851,7 +851,7 @@
       var el = document.getElementById('bsodObjective');
       function roll(){
         var n = Math.floor(1000 + Math.random() * 9000);
-        el.textContent = 'Objective ' + n + ' you are allowed to leave now';
+        el.textContent = 'You are not supposed to leave already Specimen ' + n;
       }
       roll();
       objectiveTimer = setInterval(roll, 60);
@@ -953,10 +953,10 @@
     });
 
     var LOG_LINES = [
-      'Object 3582 - closed window',
-      'Object 2854 - finished',
-      'Object 9523 - Started Training',
-      'Object 5650 - Unknown'
+      'Specimen 3582 - closed window',
+      'Specimen 2854 - finished',
+      'Specimen 9523 - Started Training',
+      'Specimen 5650 - Unknown'
     ];
 
     function typeLogLines(el, lines, cb){
