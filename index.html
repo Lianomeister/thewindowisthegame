@@ -1215,10 +1215,26 @@
       try{
         localStorage.setItem(STORAGE_KEY, canvas.toDataURL());
       }catch(err){}
+
+      var exportCanvas = document.createElement('canvas');
+      exportCanvas.width = canvas.width;
+      exportCanvas.height = canvas.height;
+      var exportCtx = exportCanvas.getContext('2d');
+      exportCtx.drawImage(canvas, 0, 0);
+      var imgData = exportCtx.getImageData(0, 0, exportCanvas.width, exportCanvas.height);
+      var data = imgData.data;
+      var threshold = 245;
+      for(var i = 0; i < data.length; i += 4){
+        if(data[i] >= threshold && data[i+1] >= threshold && data[i+2] >= threshold){
+          data[i+3] = 0;
+        }
+      }
+      exportCtx.putImageData(imgData, 0, 0);
+
       var link = document.createElement('a');
       var stamp = new Date().toISOString().replace(/[:.]/g, '-');
       link.download = 'painting-' + stamp + '.png';
-      link.href = canvas.toDataURL('image/png');
+      link.href = exportCanvas.toDataURL('image/png');
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
