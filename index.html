@@ -606,6 +606,10 @@
       <svg class="icon" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#fff" stroke="#666" stroke-width="1.2"/></svg>
       concept.txt
     </a>
+    <a href="#" id="taskPaint" onclick="return false;">
+      <svg class="icon" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#fff"/><circle cx="5" cy="8" r="3" fill="#ff5a4d"/></svg>
+      paint.exe
+    </a>
     <a href="#" id="taskStory" onclick="return false;">
       <svg class="icon" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#fff" stroke="#666" stroke-width="1.2"/></svg>
       story.txt
@@ -952,6 +956,12 @@
       conceptWin.classList.remove('is-hidden');
       var l = layout();
       conceptCtrl.reset(l.conceptLeft, l.conceptTop);
+    });
+    document.getElementById('taskPaint').addEventListener('click', function(e){
+      e.preventDefault();
+      paintWin.classList.remove('is-hidden');
+      var l = layout();
+      paintCtrl.reset(l.paintLeft, l.paintTop);
     });
     document.getElementById('taskStory').addEventListener('click', function(e){
       e.preventDefault();
