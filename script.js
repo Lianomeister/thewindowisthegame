@@ -1105,6 +1105,7 @@
       var layerOpacity = Math.round(layers[index].opacity * 100);
       document.getElementById('paintLayerOpacity').value = String(layerOpacity);
       document.getElementById('paintLayerOpacityValue').textContent = layerOpacity + '%';
+      document.getElementById('paintLayerOpacity').setAttribute('aria-label', 'Opacity for ' + layers[index].name);
       renderLayerList();
       renderCanvas();
     }
@@ -1205,8 +1206,10 @@
       setActiveLayer(activeLayerIndex - 1);
     });
     document.getElementById('paintLayerOpacity').addEventListener('input', function(){
-      layers[activeLayerIndex].opacity = Number(this.value) / 100;
+      var layer = layers[activeLayerIndex];
+      layer.opacity = Number(this.value) / 100;
       document.getElementById('paintLayerOpacityValue').textContent = this.value + '%';
+      refreshLayerThumbs();
       renderCanvas();
     });
 

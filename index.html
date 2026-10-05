@@ -240,7 +240,10 @@
             <button type="button" id="paintDeleteLayer" title="Delete layer">−</button>
           </div>
           <div id="paintLayerList" class="paint-layer-list" role="listbox" aria-label="Layers"></div>
-          <label class="paint-mini-field">Opacity <input id="paintLayerOpacity" type="range" min="0" max="100" value="100"><span id="paintLayerOpacityValue">100%</span></label>
+          <label class="paint-layer-opacity">
+            <span class="paint-layer-opacity-heading"><span>Layer opacity</span><output id="paintLayerOpacityValue" for="paintLayerOpacity">100%</output></span>
+            <input id="paintLayerOpacity" type="range" min="0" max="100" value="100" aria-label="Active layer opacity">
+          </label>
         </div>
       </section>
     </aside>
